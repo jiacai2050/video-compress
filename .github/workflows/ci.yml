@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**.py'
+      - '**.yml'
+      - '**.toml'
+  push:
+    branches:
+      - main
+    paths:
+      - '**.py'
+      - '**.yml'
+      - '**.toml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install
+      run: |
+        pip install hatch
+        pip install ruff
+    - name: lint
+      run: |
+        make lint

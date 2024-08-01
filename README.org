@@ -1,0 +1,13 @@
+
+* Video-compress
+[[https://pypi.org/project/video-compress][https://img.shields.io/pypi/v/video-compress.svg]]
+[[https://github.com/jiacai2050/video-compress/actions/workflows/ci.yml][https://github.com/jiacai2050/video-compress/actions/workflows/ci.yml/badge.svg]]
+
+Inspired by https://x.com/mortenjust/status/1818027566932136062
+
+* Usage
+First install the [[https://www.ffmpeg.org/download.html][ffmpeg]], then
+#+begin_src bash
+pip install video-compress
+#+end_src
+This will install two commands: =vc=, =video-compress=, which are identical.
