@@ -3,10 +3,16 @@
 [[https://pypi.org/project/video-compress][https://img.shields.io/pypi/v/video-compress.svg]]
 [[https://github.com/jiacai2050/video-compress/actions/workflows/ci.yml][https://github.com/jiacai2050/video-compress/actions/workflows/ci.yml/badge.svg]]
 
+Compress video by 90% without losing much quality, similar to what [[https://en.wikipedia.org/wiki/Silicon_Valley_(TV_series)][Pied Piper]] achieves.
+
+[[file:pied-piper.jpg]]
+
+#+begin_quote
 Inspired by https://x.com/mortenjust/status/1818027566932136062
+#+end_quote
 
 * Install
-First install the [[https://www.ffmpeg.org/download.html][ffmpeg]], then
+First install [[https://www.ffmpeg.org/download.html][ffmpeg]], then
 #+begin_src bash
 pip install video-compress
 #+end_src
@@ -22,7 +28,8 @@ make help
 usage: vc [-h] [-v] [--verbose] [-t THREADS] [--crf CRF] [--delete]
           [<video path> ...]
 
-Compression video like magic 🤩
+Compress video by 90% without losing much quality, similar to what Pied Piper
+achieves.
 
 positional arguments:
   <video path>
@@ -32,7 +39,7 @@ options:
   -v, --version         show program's version number and exit
   --verbose             show verbose log
   -t THREADS, --threads THREADS
-                        max threads to use for compression. (default: 12)
+                        max threads to use for compression. (default: 6)
   --crf CRF             constant rate factor, range from 0-51. Higher values
                         mean more compression, smaller file size, but lower
                         quality. (default: 30)

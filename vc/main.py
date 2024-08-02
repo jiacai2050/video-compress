@@ -133,7 +133,7 @@ class VideoCompressor(object):
 def main():
     parser = argparse.ArgumentParser(
         prog='vc',
-        description='Compression video like magic 🤩',
+        description='Compress video by 90% without losing much quality, similar to what Pied Piper achieves.',
     )
     parser.add_argument(
         '-v', '--version', action='version', version='%(prog)s ' + __version__
@@ -144,7 +144,7 @@ def main():
         '--threads',
         type=int,
         help='max threads to use for compression. (default: %(default)d)',
-        default=os.cpu_count(),
+        default=max(1, os.cpu_count() / 2),
     )
     parser.add_argument(
         '--crf',
