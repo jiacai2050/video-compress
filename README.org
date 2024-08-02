@@ -5,9 +5,40 @@
 
 Inspired by https://x.com/mortenjust/status/1818027566932136062
 
-* Usage
+* Install
 First install the [[https://www.ffmpeg.org/download.html][ffmpeg]], then
 #+begin_src bash
 pip install video-compress
 #+end_src
 This will install two commands: =vc=, =video-compress=, which are identical.
+
+* Usage
+#+begin_src bash :results verbatim :exports results
+make help
+#+end_src
+
+#+RESULTS:
+#+begin_example
+usage: vc [-h] [-v] [--verbose] [-t THREADS] [--crf CRF] [--delete]
+          [<video path> ...]
+
+Compression video like magic 🤩
+
+positional arguments:
+  <video path>
+
+options:
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+  --verbose             show verbose log
+  -t THREADS, --threads THREADS
+                        max threads to use for compression. (default: 12)
+  --crf CRF             constant rate factor, range from 0-51. Higher values
+                        mean more compression, smaller file size, but lower
+                        quality. (default: 30)
+  --delete              delete input video after compress successfully
+#+end_example
+
+Positional arguments can be either video files or directories.
+
+For each directory, =vc= will iteratively walk the dir to search for all videos to compress, the compressed video will be named after =${input}-compressed.mp4=.

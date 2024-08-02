@@ -4,6 +4,9 @@ build: clean readme
 clean:
 	rm -rf build dist *.egg-info
 
+help:
+	@hatch run python -m vc --help
+
 fix:
 	ruff check --fix
 	ruff format

@@ -39,7 +39,7 @@ vc = "vc:main"
 "video-compress" = "vc:main"
 
 [tool.hatch.version]
-path = "vc/__init__.py"
+path = "vc/main.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
