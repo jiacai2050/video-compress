@@ -52,7 +52,9 @@ class VideoCompressor(object):
         self.delete_after_success = delete_after_success
 
     def __enter__(self):
-        logging.info(f'Start compressing, crf:{self.crf}, delete:{self.delete_after_success}...')
+        logging.info(
+            f'Start compressing, crf:{self.crf}, delete:{self.delete_after_success}...'
+        )
         self.executor = concurrent.futures.ThreadPoolExecutor(
             max_workers=self.max_threads
         )
@@ -127,7 +129,9 @@ class VideoCompressor(object):
         si = file_size(fi)
         so = file_size(fo)
         if so > si:
-            logging.warn(f'No need to compress!, in:{humanize_bytes(si)}, out:{humanize_bytes(so)}')
+            logging.warn(
+                f'No need to compress!, in:{humanize_bytes(si)}, out:{humanize_bytes(so)}'
+            )
             os.rename(fi, fo)
             return False
         rate = (1 - float(so) / float(si)) * 100

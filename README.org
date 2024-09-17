@@ -14,7 +14,7 @@ Inspired by https://x.com/mortenjust/status/1818027566932136062
 * Install
 First install [[https://www.ffmpeg.org/download.html][ffmpeg]], then
 #+begin_src bash
-pip install video-compress
+pip3 install -U video-compress
 #+end_src
 This will install two commands: =vc=, =video-compress=, which are identical.
 
