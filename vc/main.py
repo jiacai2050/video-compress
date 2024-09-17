@@ -10,7 +10,7 @@ import threading
 from .util import file_size, humanize_bytes, is_video, make_cmd
 
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 COMPRESS_SUFFIX = '-compressed.mp4'
 FFMPEG_LOG = '/tmp/video-compress-ffmpeg.log'
 
@@ -52,7 +52,7 @@ class VideoCompressor(object):
         self.delete_after_success = delete_after_success
 
     def __enter__(self):
-        logging.info('Start compressing...')
+        logging.info(f'Start compressing, crf:{self.crf}, delete:{self.delete_after_success}...')
         self.executor = concurrent.futures.ThreadPoolExecutor(
             max_workers=self.max_threads
         )
@@ -69,61 +69,72 @@ class VideoCompressor(object):
         for input in inputs:
             self.iter(input)
 
-    def call_ffmpeg(self, input, output):
-        cmd = make_cmd(input, output, str(self.crf))
+    def call_ffmpeg(self, fi, fo):
+        tmp = fo + '.tmp.mp4'
+        cmd = make_cmd(fi, tmp, str(self.crf))
         logging.debug(f'Running: {cmd}')
         self.ffmpeg_log.write(f'Running: {cmd}\n')
         self.ffmpeg_log.flush()
         ret = subprocess.run(cmd, stdout=self.ffmpeg_log, stderr=subprocess.STDOUT)
-        return ret.returncode == 0
+        if ret.returncode != 0:
+            logging.error(f'Run ffmpeg failed, exitcode: {ret.returncode}')
+            return False
 
-    def compress(self, input_file):
-        if input_file.endswith(COMPRESS_SUFFIX):
+        try:
+            os.rename(tmp, fo)
+            return True
+        except Exception as e:
+            logging.error(f'Rename {tmp} failed, err: {e}')
+            return False
+
+    def compress(self, fi):
+        if fi.endswith(COMPRESS_SUFFIX):
             self.stats.inc_skip()
-            logging.warn(f'{input_file} is already compressed, skipping...')
+            logging.warn(f'{fi} is already compressed, skipping...')
             return
 
-        (root, ext) = os.path.splitext(input_file)
+        (root, ext) = os.path.splitext(fi)
         if is_video(ext) is False:
             self.stats.inc_skip()
-            logging.warn(f'{input_file} is not video, skipping...')
+            logging.warn(f'{fi} is not video, skipping...')
             return
 
-        output = root + COMPRESS_SUFFIX
-        if os.path.exists(output):
+        fo = root + COMPRESS_SUFFIX
+        if os.path.exists(fo):
             self.stats.inc_skip()
-            logging.warn(f'{output} already exists, skipping...')
+            logging.warn(f'{fo} already exists, skipping...')
             return
 
-        is_success = self.call_ffmpeg(input_file, output)
-        if is_success:
-            self.on_success(input, output)
-            if self.delete_after_success:
-                logging.warn(f'Delete {input_file}')
-                os.remove(input_file)
+        is_success = self.call_ffmpeg(fi, fo)
+        if is_success is True:
+            if self.on_success(fi, fo) and self.delete_after_success:
+                logging.warn(f'Delete {fi}')
+                os.remove(fi)
         else:
-            self.on_failure(input)
+            self.on_failure(fi)
 
     def iter(self, file_or_dir):
         if os.path.isfile(file_or_dir):
             self.executor.submit(self.compress, file_or_dir)
         elif os.path.isdir(file_or_dir):
-            for root, sub_dirs, files in os.walk(file_or_dir):
+            for root, _, files in os.walk(file_or_dir):
                 for file in files:
                     input_video = os.path.join(root, file)
                     self.executor.submit(self.compress, input_video)
 
-                for dir in sub_dirs:
-                    self.iter(os.path.join(root, dir))
-
-    def on_success(self, input, output):
+    def on_success(self, fi, fo):
         self.stats.inc_success()
-        si = file_size(input)
-        so = file_size(output)
+        si = file_size(fi)
+        so = file_size(fo)
+        if so > si:
+            logging.warn(f'No need to compress!, in:{humanize_bytes(si)}, out:{humanize_bytes(so)}')
+            os.rename(fi, fo)
+            return False
         rate = (1 - float(so) / float(si)) * 100
         logging.info(
-            f'{input} size raw:{humanize_bytes(si)}, compressed:{humanize_bytes(so)}, compress rate:{rate:.2f}%'
+            f'{fi} size raw:{humanize_bytes(si)}, compressed:{humanize_bytes(so)}, compress rate:{rate:.2f}%'
         )
+        return True
 
     def on_failure(self, input):
         self.stats.inc_failure()
@@ -153,6 +164,7 @@ def main():
         default=30,
     )
     parser.add_argument(
+        '-x',
         '--delete',
         action='store_true',
         dest='delete_after_success',
