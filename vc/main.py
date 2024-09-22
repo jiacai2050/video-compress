@@ -10,7 +10,7 @@ import threading
 from .util import file_size, humanize_bytes, is_video, make_cmd
 
 
-__version__ = '0.3.0'
+__version__ = '0.3.1-dev'
 COMPRESS_SUFFIX = '-compressed.mp4'
 FFMPEG_LOG = '/tmp/video-compress-ffmpeg.log'
 
@@ -92,19 +92,19 @@ class VideoCompressor(object):
     def compress(self, fi):
         if fi.endswith(COMPRESS_SUFFIX):
             self.stats.inc_skip()
-            logging.warn(f'{fi} is already compressed, skipping...')
+            logging.debug(f'{fi} is already compressed, skipping...')
             return
 
         (root, ext) = os.path.splitext(fi)
         if is_video(ext) is False:
             self.stats.inc_skip()
-            logging.warn(f'{fi} is not video, skipping...')
+            logging.debug(f'{fi} is not video, skipping...')
             return
 
         fo = root + COMPRESS_SUFFIX
         if os.path.exists(fo):
             self.stats.inc_skip()
-            logging.warn(f'{fo} already exists, skipping...')
+            logging.debug(f'{fo} already exists, skipping...')
             return
 
         is_success = self.call_ffmpeg(fi, fo)

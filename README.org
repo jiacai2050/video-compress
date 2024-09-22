@@ -16,6 +16,11 @@ First install [[https://www.ffmpeg.org/download.html][ffmpeg]], then
 #+begin_src bash
 pip3 install -U video-compress
 #+end_src
+Or install latest nightly version
+#+begin_src bash
+pip3 install --force-reinstall -U git+https://github.com/jiacai2050/video-compress.git
+#+end_src
+
 This will install two commands: =vc=, =video-compress=, which are identical.
 
 * Usage
