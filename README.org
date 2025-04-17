@@ -1,3 +1,7 @@
+#+begin_quote
+[!TIP]
+Repo Move to https://github.com/jiacai2050/my-works/tree/main/video-compress
+#+end_quote
 
 * Video-compress
 [[https://pypi.org/project/video-compress][https://img.shields.io/pypi/v/video-compress.svg]]
